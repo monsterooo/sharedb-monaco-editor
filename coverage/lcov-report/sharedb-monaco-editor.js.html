@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">67.86% </span>
+                <span class="strong">85.71% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>19/28</span>
+                <span class='fraction'>24/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.33% </span>
+                <span class="strong">83.33% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>7/12</span>
+                <span class='fraction'>10/12</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">64% </span>
+                <span class="strong">84% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>16/25</span>
+                <span class='fraction'>21/25</span>
             </div>
         
             
@@ -55,7 +55,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -154,25 +154,25 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -219,15 +219,15 @@
     event.changes.forEach((change) =&gt; {
       const { text, rangeLength, rangeOffset } = change;
       let replacedText = '';
-      <span class="missing-if-branch" title="if path not taken" >I</span>if (text.length === 0 &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >rangeLength &gt; 0) {</span>
+      if (text.length === 0 &amp;&amp; rangeLength &gt; 0) {
         // 删除
-<span class="cstat-no" title="statement not covered" >        replacedText = c</span>ontent.slice(rangeOffset, rangeOffset + rangeLength);
-<span class="cstat-no" title="statement not covered" >        op.p</span>ush({ p: [this.key, rangeOffset], sd: replacedText });
-      } else <span class="missing-if-branch" title="if path not taken" >I</span>if (text.length &gt; 0 &amp;&amp; rangeLength &gt; 0) {
+        replacedText = content.slice(rangeOffset, rangeOffset + rangeLength);
+        op.push({ p: [this.key, rangeOffset], sd: replacedText });
+      } else if (text.length &gt; 0 &amp;&amp; rangeLength &gt; 0) {
         // 粘贴、输入字符点击提示自动输入
-<span class="cstat-no" title="statement not covered" >        replacedText = c</span>ontent.slice(rangeOffset, rangeOffset + rangeLength);
-<span class="cstat-no" title="statement not covered" >        op.p</span>ush({ p: [this.key, rangeOffset], sd: replacedText });
-<span class="cstat-no" title="statement not covered" >        op.p</span>ush({ p: [this.key, rangeOffset], si: text });
+        replacedText = content.slice(rangeOffset, rangeOffset + rangeLength);
+        op.push({ p: [this.key, rangeOffset], sd: replacedText });
+        op.push({ p: [this.key, rangeOffset], si: text });
       } else {
         op.push({ p: [this.key, rangeOffset], si: text });
       }
@@ -244,7 +244,7 @@ export default Adapter;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Tue Jun 08 2021 23:38:46 GMT+0800 (GMT+08:00)
+                at Wed Jun 09 2021 14:37:05 GMT+0800 (中国标准时间)
             </div>
         </div>
         <script src="prettify.js"></script>

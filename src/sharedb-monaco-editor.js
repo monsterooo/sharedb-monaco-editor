@@ -1,12 +1,104 @@
-class Adapter {
-  constructor(instance, options = { key: 'content' }) {
-    this.monaco = instance;
+class ShareDBMonacoEditor {
+  constructor(monaco, options = { key: "content" }) {
+    this.monaco = monaco;
     this.model = this.monaco.getModel();
-    this.lastDocLines = this.model.getLinesContent();
     this.key = options.key;
+    this.onOp = options.onOp;
+    this.onStart = options.onStart;
+    this.onStop = options.onStop;
+    this.started = false;
+    this.suppressChange = false;
+    this.MONACO_EDITOR_OP_SOURCE = "MonacoEditor";
 
     this.onChange = this.onChange.bind(this);
+    global.monaco = this.monaco;
+
+    this.getLastDocLines();
+  }
+
+  static attachDoc(
+    shareDoc,
+    monaco,
+    options = { key: "conetnt" },
+    callback = () => {}
+  ) {
+    const { key } = options;
+    let shareDBMonacoEditor;
+    const shareDBOpListener = (op, source) => {
+      console.log("shareDBOpListener", op, source);
+      op.forEach((opPart) => {
+        const { p } = opPart;
+        if (p && p.length === 2 && p[0] === key) {
+          shareDBMonacoEditor.applyOp(opPart, source);
+        }
+      });
+    };
+    shareDBMonacoEditor = new ShareDBMonacoEditor(monaco, {
+      key,
+      onStart: () => {
+        shareDoc.on("op", shareDBOpListener);
+      },
+      onStop: () => {
+        shareDoc.removeListener("op", shareDBOpListener);
+      },
+      onOp: (op, source) => {
+        shareDoc.submitOp(op, source);
+
+        console.log("receive op:", op, source);
+      },
+    });
+    shareDoc.subscribe((err) => {
+      if (err) {
+        return callback(err);
+      }
+      console.log("subscribe:", shareDoc);
+      shareDBMonacoEditor.setValue(shareDoc.data[key]);
+      return callback(null);
+    });
+    return shareDBMonacoEditor;
+  }
+
+  start() {
+    if (this.started) {
+      return;
+    }
     this.handleChange = this.monaco.onDidChangeModelContent(this.onChange);
+    this.started = true;
+    this.onStart();
+  }
+
+  getLastDocLines() {
+    this.lastDocLines = this.model.getLinesContent();
+  }
+
+  setValue(text) {
+    if (!this.started) {
+      this.start();
+    }
+    this.suppressChange = true;
+    this.model.setValue(text);
+    this.getLastDocLines();
+    this.suppressChange = false;
+  }
+
+  applyOp(op, source) {
+    console.log("sorce:", source);
+    if (!this.started) {
+      return;
+    }
+    this.suppressChange = true;
+    this.applyChangesFromOp(op);
+    this.suppressChange = false;
+  }
+
+  applyChangesFromOp(op) {
+    op.forEach((part) => {
+      const [, index] = part.p;
+      if (part.si) {
+        const pos = this.model.getPositionAt(index);
+        console.log("pos:", pos);
+      }
+    });
   }
 
   /**
@@ -29,17 +121,20 @@ class Adapter {
    * @property {e.versionId} 操作版本号递增
    */
   onChange(event) {
+    if (this.suppressChange) {
+      return;
+    }
     const content = this.lastDocLines.join(this.model.getEOL());
     const op = this.createOpFormChange(event, content);
-    this.lastDocLines = this.model.getLinesContent();
-    console.log(op);
+    this.getLastDocLines();
+    this.onOp(op, this.MONACO_EDITOR_OP_SOURCE);
   }
 
   createOpFormChange(event, content) {
     const op = [];
     event.changes.forEach((change) => {
       const { text, rangeLength, rangeOffset } = change;
-      let replacedText = '';
+      let replacedText = "";
       if (text.length === 0 && rangeLength > 0) {
         // 删除
         replacedText = content.slice(rangeOffset, rangeOffset + rangeLength);
@@ -57,4 +152,4 @@ class Adapter {
   }
 }
 
-export default Adapter;
+export default ShareDBMonacoEditor;
