@@ -34,5 +34,8 @@
       "text"
     ]
   },
-  "dependencies": {}
+  "dependencies": {},
+  "peerDependencies": {
+    "monaco-editor": "^0.24.0"
+  }
 }
