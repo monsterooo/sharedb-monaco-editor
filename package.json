@@ -1,8 +1,8 @@
 {
   "name": "sharedb-monaco-editor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "lib/sharedb-monaco-editor.js",
   "scripts": {
     "build": "npm run lint && babel ./src -d ./lib",
     "lint": "eslint ./src",

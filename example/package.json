@@ -1,28 +1,28 @@
 {
-  "name": "example",
+  "name": "example2",
   "version": "1.0.0",
   "description": "",
-  "main": "client.js",
+  "main": "index.html",
   "scripts": {
-    "build-back": "browserify client.js -o static/dist/bundle.js",
-    "build": "babel ./client.js -d ./static/dist",
-    "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "browserify": "^17.0.0"
+    "start": "parcel index.html",
+    "build": "parcel build index.html",
+    "server": "node server.js"
   },
   "dependencies": {
     "@teamwork/websocket-json-stream": "^2.0.0",
     "express": "^4.17.1",
-    "monaco-editor": "^0.24.0",
+    "monaco-editor": "^0.25.1",
     "ot-json0": "^1.1.0",
+    "parcel-bundler": "^1.6.1",
     "sharedb": "^1.8.1",
+    "sharedb-monaco-editor": "^1.0.0",
     "ws": "^7.4.6"
-  }
+  },
+  "devDependencies": {
+    "@babel/core": "7.2.0"
+  },
+  "resolutions": {
+    "@babel/preset-env": "7.13.8"
+  },
+  "keywords": []
 }

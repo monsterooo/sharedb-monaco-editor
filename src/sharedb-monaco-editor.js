@@ -1,5 +1,7 @@
 // eslint-disable-next-line
 import * as monacoSource from "monaco-editor";
+
+const MONACO_EDITOR_OP_SOURCE = "MonacoEditor";
 class ShareDBMonacoEditor {
   constructor(monaco, options = { key: "content" }) {
     this.monaco = monaco;
@@ -10,7 +12,6 @@ class ShareDBMonacoEditor {
     this.onStop = options.onStop;
     this.started = false;
     this.suppressChange = false;
-    this.MONACO_EDITOR_OP_SOURCE = "MonacoEditor";
     this.onChange = this.onChange.bind(this);
 
     this.getLastDocLines();
@@ -25,7 +26,6 @@ class ShareDBMonacoEditor {
     const { key } = options;
     let shareDBMonacoEditor;
     const shareDBOpListener = (op, source) => {
-      console.log("shareDBOpListener", op, source);
       op.forEach((opPart) => {
         const { p } = opPart;
         if (p && p.length === 2 && p[0] === key) {
@@ -41,17 +41,14 @@ class ShareDBMonacoEditor {
       onStop: () => {
         shareDoc.removeListener("op", shareDBOpListener);
       },
-      onOp: (op, source) => {
-        shareDoc.submitOp(op, { source: this.MONACO_EDITOR_OP_SOURCE });
-
-        console.log("receive op:", op, source);
+      onOp: (op) => {
+        shareDoc.submitOp(op, { source: MONACO_EDITOR_OP_SOURCE });
       },
     });
     shareDoc.subscribe((err) => {
       if (err) {
         return callback(err);
       }
-      console.log("subscribe:", shareDoc);
       shareDBMonacoEditor.setValue(shareDoc.data[key]);
       return callback(null);
     });
@@ -82,15 +79,15 @@ class ShareDBMonacoEditor {
   }
 
   applyOp(op, source) {
-    console.log("sorce:", source);
     if (!this.started) {
       return;
     }
-    if (source === this.MONACO_EDITOR_OP_SOURCE) {
+    if (source === MONACO_EDITOR_OP_SOURCE) {
       return;
     }
     this.suppressChange = true;
     this.applyChangesFromOp(op);
+    this.getLastDocLines();
     this.suppressChange = false;
   }
 
@@ -98,7 +95,6 @@ class ShareDBMonacoEditor {
     const [, index] = op.p;
     if (op.si) {
       const pos = this.model.getPositionAt(index);
-      console.log("插入", op, pos);
       this.monaco.executeEdits("my-source", [
         {
           range: new monacoSource.Range(
@@ -107,10 +103,25 @@ class ShareDBMonacoEditor {
             pos.lineNumber,
             pos.column
           ),
+          text: op.si,
+          forceMoveMarkers: true,
         },
       ]);
     } else if (op.sd) {
-      console.log("delete");
+      const from = this.model.getPositionAt(index);
+      const to = this.model.getPositionAt(index + op.sd.length);
+      this.monaco.executeEdits("my-source", [
+        {
+          range: new monacoSource.Range(
+            from.lineNumber,
+            from.column,
+            to.lineNumber,
+            to.column
+          ),
+          text: "",
+          forceMoveMarkers: true,
+        },
+      ]);
     }
   }
 
@@ -140,7 +151,7 @@ class ShareDBMonacoEditor {
     const content = this.lastDocLines.join(this.model.getEOL());
     const op = this.createOpFormChange(event, content);
     this.getLastDocLines();
-    this.onOp(op, this.MONACO_EDITOR_OP_SOURCE);
+    this.onOp(op);
   }
 
   createOpFormChange(event, content) {

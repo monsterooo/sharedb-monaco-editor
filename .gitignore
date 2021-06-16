@@ -1,5 +1,7 @@
 .idea/
 .vscode/
 .nyc_output/
+.cache/
 lib/
+dist/
 node_modules/

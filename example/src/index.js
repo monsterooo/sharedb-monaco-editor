@@ -4,7 +4,7 @@ var ShareDBMonaco = require("sharedb-monaco-editor").default;
 
 sharedb.types.register(json0.type);
 
-var socket = new WebSocket("ws://" + location.host);
+var socket = new WebSocket("ws://localhost:8080");
 var shareConnection = new sharedb.Connection(socket);
 var doc = shareConnection.get("example", "editor");
 
@@ -15,17 +15,12 @@ window.require(["vs/editor/editor.main"], function () {
   var editor = window.monaco.editor.create(
     document.getElementById("container"),
     {
-      value: `function main() {
-  console.log('main');
-}
-main();
-`,
+      value: "",
       language: "javascript",
     }
   );
-  console.log("editor:", editor);
   global.editor = editor;
   ShareDBMonaco.attachDoc(doc, editor, {
     key: "content",
-  }).start();
+  });
 });

@@ -18,11 +18,7 @@ function createDoc(callback) {
     if (doc.type === null) {
       doc.create(
         {
-          content: `function main() {
-  console.log('main');
-}
-main();
-`,
+          content: "",
         },
         callback
       );
